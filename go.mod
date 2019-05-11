@@ -1,4 +1,4 @@
-module gclustercore
+module github.com/sellerin/gclustercore
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
