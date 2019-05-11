@@ -20,7 +20,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-func test() {
+func Test() {
 	fmt.Println("test")
 }
 
