@@ -32,9 +32,9 @@ require (
 	golang.org/x/text v0.3.1-0.20181227161524-e6919f6577db // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	gopkg.in/inf.v0 v0.9.0 // indirect
-	k8s.io/api v0.0.0-20180628040859-072894a440bd // indirect
-	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d // indirect
-	k8s.io/client-go v8.0.0+incompatible // indirect
+	k8s.io/api v0.0.0-20180628040859-072894a440bd
+	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
+	k8s.io/client-go v8.0.0+incompatible
 	k8s.io/klog v0.3.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20190228160746-b3a7cee44a30 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
