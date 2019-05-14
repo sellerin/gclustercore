@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	uuid "github.com/satori/go.uuid"
+
 	batchv1 "k8s.io/api/batch/v1"
 	//appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -22,15 +24,18 @@ import (
 )
 
 type TestConfiguration struct {
-	GitRepo        string `json:"git_repo,omitempty"`
-	Revision       string `json:"revision,omitempty"`
-	SimulationName string `json:"simulation_name,omitempty"`
-	NbInjectords   int32  `json:"nb_injectors,omitempty"`
-	NbVirtualUsers int32  `json:"nb_vu,omitempty"`
-	Duration       int64  `json:"duration,omitempty"`
+	GitRepo        string    `json:"git_repo,omitempty"`
+	Revision       string    `json:"revision,omitempty"`
+	SimulationName string    `json:"simulation_name,omitempty"`
+	NbInjectords   int32     `json:"nb_injectors,omitempty"`
+	NbVirtualUsers int32     `json:"nb_vu,omitempty"`
+	Duration       int64     `json:"duration,omitempty"`
+	Id             uuid.UUID `json:"id,omitempty"`
 }
 
-func LaunchTest(t *TestConfiguration) {
+func LaunchTest(t *TestConfiguration) *uuid.UUID {
+
+	t.Id = uuid.NewV4()
 
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
@@ -186,20 +191,10 @@ func LaunchTest(t *TestConfiguration) {
 	}
 	fmt.Printf("Created job watcher %q.\n", job_watcher_result.GetObjectMeta().GetName())
 
+	return &t.Id
 }
 
 func main() {
-
-	t := &TestConfiguration{
-		GitRepo:        "https://github.com/sellerin/gatling-cluster.git",
-		Revision:       "master",
-		SimulationName: "c2gwebaws.C2gwebSimulation",
-		NbInjectords:   2,
-		NbVirtualUsers: 2,
-		Duration:       300,
-	}
-
-	LaunchTest(t)
 
 	/*
 		deploymentsClient := clientset.AppsV1().Deployments(apiv1.NamespaceDefault)

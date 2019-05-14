@@ -24,6 +24,7 @@ require (
 	github.com/onsi/gomega v0.0.0-20190113212917-5533ce8a0da3 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529 // indirect
