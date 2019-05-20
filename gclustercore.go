@@ -32,6 +32,19 @@ type TestConfiguration struct {
 	NbInjectords   int32  `json:"nb_injectors,omitempty"`
 	NbVirtualUsers int32  `json:"nb_vu,omitempty"`
 	Duration       int64  `json:"duration,omitempty"`
+	Ramp           int64  `json:"ramp,omitempty"`
+}
+
+type Namespace int
+
+const (
+	NamespaceDev Namespace = iota
+	NamespaceValid
+	NamespaceProd
+)
+
+func (s Namespace) String() string {
+	return [...]string{"dev", "valid", "prod"}[s]
 }
 
 func getKubeClient() *kubernetes.Clientset {
@@ -54,13 +67,13 @@ func getKubeClient() *kubernetes.Clientset {
 	return kubeClient
 }
 
-func getJobsClient(kubeClient *kubernetes.Clientset) v1.JobInterface {
-	jobsClient := kubeClient.BatchV1().Jobs(apiv1.NamespaceDefault)
+func getJobsClient(kubeClient *kubernetes.Clientset, nameSpace Namespace) v1.JobInterface {
+	jobsClient := kubeClient.BatchV1().Jobs(nameSpace.String())
 	return jobsClient
 }
 
-func getPodInterface(kubeClient *kubernetes.Clientset) corev1.PodInterface {
-	podInterface := kubeClient.CoreV1().Pods(apiv1.NamespaceDefault)
+func getPodInterface(kubeClient *kubernetes.Clientset, nameSpace Namespace) corev1.PodInterface {
+	podInterface := kubeClient.CoreV1().Pods(nameSpace.String())
 	return podInterface
 }
 
@@ -74,18 +87,18 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-func LaunchTest(t *TestConfiguration) string {
+func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 
 	rand.Seed(time.Now().UnixNano())
 	testId := randSeq(5)
 
 	kubeClient := getKubeClient()
-	jobsClient := getJobsClient(kubeClient)
+	jobsClient := getJobsClient(kubeClient, nameSpace)
 
 	job := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "batch-job-" + testId,
-			Namespace: "default",
+			Namespace: nameSpace.String(),
 			Labels:    map[string]string{"type": "batch-job", "simulation_id": testId},
 		},
 		Spec: batchv1.JobSpec{
@@ -140,6 +153,18 @@ func LaunchTest(t *TestConfiguration) string {
 									Value: t.SimulationName,
 								},
 								{
+									Name:  "NBUSERS",
+									Value: fmt.Sprint(t.NbVirtualUsers),
+								},
+								{
+									Name:  "RAMP",
+									Value: t.SimulationName,
+								},
+								{
+									Name:  "DURATION",
+									Value: fmt.Sprint(t.Duration),
+								},
+								{
 									Name:  "SIMULATION_ID",
 									Value: testId,
 								},
@@ -176,7 +201,7 @@ func LaunchTest(t *TestConfiguration) string {
 	job_watcher := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "batch-watcher-" + testId,
-			Namespace: "default",
+			Namespace: nameSpace.String(),
 			Labels:    map[string]string{"type": "batch-watcher", "simulation_id": testId},
 		},
 		Spec: batchv1.JobSpec{
@@ -240,10 +265,10 @@ func LaunchTest(t *TestConfiguration) string {
 
 }
 
-func GetStatus(id *uuid.UUID) *batchv1.JobStatus {
+func GetStatus(id *uuid.UUID, nameSpace Namespace) *batchv1.JobStatus {
 	//kubectl get job batch-job --output json
 	kubeClient := getKubeClient()
-	jobsClient := getJobsClient(kubeClient)
+	jobsClient := getJobsClient(kubeClient, nameSpace)
 	job, err := jobsClient.Get("batch-job", metav1.GetOptions{})
 	if err != nil {
 		panic(err)
@@ -251,8 +276,8 @@ func GetStatus(id *uuid.UUID) *batchv1.JobStatus {
 	return &job.Status
 }
 
-func deletePods(kubeClient *kubernetes.Clientset, s string) {
-	podInterface := getPodInterface(kubeClient)
+func deletePods(kubeClient *kubernetes.Clientset, nameSpace Namespace, s string) {
+	podInterface := getPodInterface(kubeClient, nameSpace)
 	podList, err := podInterface.List(metav1.ListOptions{
 		LabelSelector: s,
 	})
@@ -269,9 +294,9 @@ func deletePods(kubeClient *kubernetes.Clientset, s string) {
 	}
 }
 
-func DeleteJobs() {
+func DeleteJobs(nameSpace Namespace) {
 	kubeClient := getKubeClient()
-	jobsClient := getJobsClient(kubeClient)
+	jobsClient := getJobsClient(kubeClient, nameSpace)
 	jobsList, _ := jobsClient.List(metav1.ListOptions{})
 
 	if len(jobsList.Items) > 0 {
@@ -283,8 +308,8 @@ func DeleteJobs() {
 		}
 	}
 
-	deletePods(kubeClient, "type=batch-watcher-pod")
-	deletePods(kubeClient, "type=batch-job-pod")
+	deletePods(kubeClient, nameSpace, "type=batch-watcher-pod")
+	deletePods(kubeClient, nameSpace, "type=batch-job-pod")
 }
 
 func int32Ptr(i int32) *int32 { return &i }

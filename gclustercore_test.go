@@ -16,9 +16,10 @@ func TestLaunch(t *testing.T) {
 		NbInjectords:   2,
 		NbVirtualUsers: 2,
 		Duration:       300,
+		Ramp:           10,
 	}
 
-	id := LaunchTest(tconf)
+	id := LaunchTest(tconf, NamespaceDev)
 	fmt.Printf("Gatling test started. Id: %s\n", id)
 
 }
@@ -27,7 +28,7 @@ func TestGetStatus(t *testing.T) {
 
 	id, _ := uuid.FromString("e9b728fd-5f50-46d3-bd5f-db0f82a0c711")
 
-	status := GetStatus(&id)
+	status := GetStatus(&id, NamespaceDev)
 
 	status2B, _ := json.Marshal(*status)
     fmt.Println(string(status2B))
@@ -35,9 +36,8 @@ func TestGetStatus(t *testing.T) {
 }
 
 func TestDeleteJobs(t *testing.T) {
-    DeleteJobs()
+    DeleteJobs(NamespaceDev)
 }
-
 
 	/*
 		deploymentsClient := clientset.AppsV1().Deployments(apiv1.NamespaceDefault)
