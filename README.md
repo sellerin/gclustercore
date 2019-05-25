@@ -13,4 +13,5 @@ go build main.go
 2) test
 go test
 
+go test -run Launch
 go test -run GetStatus

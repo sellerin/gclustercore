@@ -230,6 +230,10 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 							Image: "eu.gcr.io/iron-inkwell-205415/watcher:latest",
 							Env: []apiv1.EnvVar{
 								{
+									Name:  "DURATION",
+									Value: fmt.Sprint(t.Duration),
+								},
+								{
 									Name:  "SIMULATION_ID",
 									Value: testId,
 								},
