@@ -121,12 +121,9 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 							},
 						},
 						{
-							Name: "user-files",
+							Name: "git-repo",
 							VolumeSource: apiv1.VolumeSource{
-								GitRepo: &apiv1.GitRepoVolumeSource{
-									Repository: t.GitRepo,
-									Revision:   "master",
-								},
+								EmptyDir: &apiv1.EmptyDirVolumeSource{},
 							},
 						},
 					},
@@ -139,6 +136,17 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 								{
 									Name:      "nfs",
 									MountPath: "/exports",
+								},
+							},
+						},
+						{
+							Name:  "git-clone",
+							Image: "alpine/git",
+							Args:  []string{"clone", "--single-branch", "--branch", t.Revision, t.GitRepo, "/repo"},
+							VolumeMounts: []apiv1.VolumeMount{
+								{
+									Name:      "git-repo",
+									MountPath: "/repo",
 								},
 							},
 						},
@@ -176,10 +184,9 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 									SubPath:   "results/" + testId,
 								},
 								{
-									Name:      "user-files",
+									Name:      "git-repo",
 									MountPath: "/gatling-charts-highcharts-bundle-3.0.2/user-files",
 									ReadOnly:  true,
-									SubPath:   "gatling-cluster/user-files",
 								},
 							},
 						},
