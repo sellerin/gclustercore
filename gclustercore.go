@@ -143,6 +143,27 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 							Name:  "git-clone",
 							Image: "alpine/git",
 							Args:  []string{"clone", "--single-branch", "--branch", t.Revision, t.GitRepo, "/repo"},
+							Env: []apiv1.EnvVar{
+								{
+									Name: "GIT_USERNAME",
+									ValueFrom: &apiv1.EnvVarSource{
+										SecretKeyRef: &apiv1.SecretKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{Name: "git-secret"},
+											Key:                  "username",
+										},
+									},
+								},
+								{
+									Name: "GIT_PASSWORD",
+									ValueFrom: &apiv1.EnvVarSource{
+										SecretKeyRef: &apiv1.SecretKeySelector{
+											LocalObjectReference: apiv1.LocalObjectReference{Name: "git-secret"},
+											Key:                  "password",
+										},
+									},
+								},
+							},
+
 							VolumeMounts: []apiv1.VolumeMount{
 								{
 									Name:      "git-repo",

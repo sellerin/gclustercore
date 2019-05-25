@@ -10,7 +10,7 @@ import (
 func TestLaunch(t *testing.T) {
 
 	tconf := &TestConfiguration{
-		GitRepo:        "https://github.com/sellerin/gatling-cluster.git",
+		GitRepo:        "https://$(GIT_USERNAME):$(GIT_PASSWORD)@github.com/sellerin/gatling-simulation.git",
 		Revision:       "master",
 		SimulationName: "c2gwebaws.C2gwebSimulation",
 		NbInjectords:   2,
