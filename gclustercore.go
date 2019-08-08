@@ -175,7 +175,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 					Containers: []apiv1.Container{
 						{
 							Name:  "main",
-							Image: "eu.gcr.io/iron-inkwell-205415/perf:latest",
+							Image: "eu.gcr.io/long-justice-248915/perf:latest",
 							Env: []apiv1.EnvVar{
 								{
 									Name:  "SIMULATION_NAME",
@@ -255,7 +255,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 					Containers: []apiv1.Container{
 						{
 							Name:  "watcher",
-							Image: "eu.gcr.io/iron-inkwell-205415/watcher:latest",
+							Image: "eu.gcr.io/long-justice-248915/watcher:latest",
 							Env: []apiv1.EnvVar{
 								{
 									Name:  "DURATION",
