@@ -105,7 +105,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 			Parallelism:           int32Ptr(t.NbInjectords),
 			Completions:           int32Ptr(t.NbInjectords),
 			BackoffLimit:          int32Ptr(1),
-			ActiveDeadlineSeconds: &(&struct{ x int64 }{t.Duration + 60}).x,
+			ActiveDeadlineSeconds: &(&struct{ x int64 }{t.Duration + 3600}).x,
 			Template: apiv1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{"type": "batch-job-pod", "simulation_id": testId},
@@ -236,7 +236,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 			Parallelism:           int32Ptr(1),
 			Completions:           int32Ptr(1),
 			BackoffLimit:          int32Ptr(0),
-			ActiveDeadlineSeconds: &(&struct{ x int64 }{t.Duration + 300}).x,
+			ActiveDeadlineSeconds: &(&struct{ x int64 }{t.Duration + 3600}).x,
 			Template: apiv1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{"type": "batch-watcher-pod", "simulation_id": testId},
