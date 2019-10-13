@@ -14,6 +14,7 @@ func TestLaunch(t *testing.T) {
 		GitRepo:        "https://$(GIT_USERNAME):$(GIT_PASSWORD)@github.com/sellerin/gatling-simulation.git",
 		Revision:       "master",
 		SimulationName: "c2gwebaws.C2gwebSimulation",
+		Data:           "{\"param1\":\"value1\",\"param2\":\"value2\"}",
 		NbInjectords:   2,
 		NbVirtualUsers: 2,
 		Duration:       300,

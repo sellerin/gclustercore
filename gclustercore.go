@@ -2,13 +2,13 @@
 package gclustercore
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"math/rand"
+	"os"
 	"path/filepath"
 	"time"
-	"os"
-	"encoding/json"
 
 	uuid "github.com/satori/go.uuid"
 
@@ -31,6 +31,7 @@ type TestConfiguration struct {
 	GitRepo        string `json:"git_repo,omitempty"`
 	Revision       string `json:"revision,omitempty"`
 	SimulationName string `json:"simulation_name,omitempty"`
+	Data           string `json:"data,omitempty"`
 	NbInjectords   int32  `json:"nb_injectors,omitempty"`
 	NbVirtualUsers int32  `json:"nb_vu,omitempty"`
 	Duration       int64  `json:"duration,omitempty"`
@@ -102,7 +103,7 @@ func readConfiguration() Configuration {
 	configuration := Configuration{}
 	err := decoder.Decode(&configuration)
 	if err != nil {
-	  panic(err)
+		panic(err)
 	}
 	return configuration
 }
@@ -203,6 +204,10 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 								{
 									Name:  "SIMULATION_NAME",
 									Value: t.SimulationName,
+								},
+								{
+									Name:  "DATA",
+									Value: t.Data,
 								},
 								{
 									Name:  "NBUSERS",
