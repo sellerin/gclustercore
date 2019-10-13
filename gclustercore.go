@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"path/filepath"
 	"time"
+	"os"
+	"encoding/json"
 
 	uuid "github.com/satori/go.uuid"
 
@@ -33,6 +35,11 @@ type TestConfiguration struct {
 	NbVirtualUsers int32  `json:"nb_vu,omitempty"`
 	Duration       int64  `json:"duration,omitempty"`
 	Ramp           int64  `json:"ramp,omitempty"`
+}
+
+type Configuration struct {
+	PerfImage    string
+	WatcherImage string
 }
 
 type Namespace int
@@ -87,7 +94,23 @@ func randSeq(n int) string {
 	return string(b)
 }
 
+func readConfiguration() Configuration {
+	fmt.Println("Read configuration conf.json")
+	file, _ := os.Open("conf.json")
+	defer file.Close()
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+	  panic(err)
+	}
+	return configuration
+}
+
 func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
+
+	configuration := readConfiguration()
+	fmt.Println(configuration.PerfImage)
 
 	rand.Seed(time.Now().UnixNano())
 	testId := randSeq(5)
@@ -175,7 +198,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 					Containers: []apiv1.Container{
 						{
 							Name:  "main",
-							Image: "eu.gcr.io/long-justice-248915/perf:latest",
+							Image: configuration.PerfImage,
 							Env: []apiv1.EnvVar{
 								{
 									Name:  "SIMULATION_NAME",
@@ -255,7 +278,7 @@ func LaunchTest(t *TestConfiguration, nameSpace Namespace) string {
 					Containers: []apiv1.Container{
 						{
 							Name:  "watcher",
-							Image: "eu.gcr.io/long-justice-248915/watcher:latest",
+							Image: configuration.WatcherImage,
 							Env: []apiv1.EnvVar{
 								{
 									Name:  "DURATION",
