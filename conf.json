@@ -1,4 +1,4 @@
 {
-    "PerfImage": "abc",
-    "WatcherImage": "def"
+    "PerfImage": "eu.gcr.io/iron-inkwell-205415/perf",
+    "WatcherImage": "eu.gcr.io/iron-inkwell-205415/watcher:latest"
 }
